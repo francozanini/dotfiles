@@ -1,0 +1,23 @@
+font-family = Monolisa
+font-size = 14
+theme = TokyoNight Night
+initial-command = tmux
+cursor-style = block
+adjust-cell-height = 35%
+window-padding-balance = true
+window-padding-x = 5
+window-padding-y = 0
+window-save-state = always
+
+# Performance Optimizations
+macos-non-native-fullscreen = false
+
+# macOS Specific Settings
+macos-titlebar-style = transparent
+macos-titlebar-proxy-icon = visible
+macos-option-as-alt = true
+macos-window-shadow = true
+macos-auto-secure-input = true
+macos-secure-input-indication = true
+macos-icon = official
+

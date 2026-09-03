@@ -16,5 +16,6 @@ link() {
 link "$DOTFILES_DIR/nvim" "$HOME/.config/nvim"
 link "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 link "$DOTFILES_DIR/ghostty" "$HOME/.config/ghostty"
+link "$DOTFILES_DIR/ghostty/config.ghostty" "$HOME/Library/Application Support/com.mitchellh.ghostty/config.ghostty"
 
 echo "Done."
