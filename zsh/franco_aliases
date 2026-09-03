@@ -1,0 +1,9 @@
+alias c="clear"
+alias ".."="cd .."
+
+alias gs="git status" 
+alias gcv="git checkout -v"
+
+alias dcu="docker compose up -d"
+alias dcd="docker compose down"
+alias vim="nvim"
