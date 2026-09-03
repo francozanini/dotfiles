@@ -1,7 +1,6 @@
 font-family = Monolisa
 font-size = 14
 theme = TokyoNight Night
-initial-command = tmux
 cursor-style = block
 adjust-cell-height = 35%
 window-padding-balance = true
