@@ -25,10 +25,46 @@ link "$DOTFILES_DIR/zsh/p10k.zsh" "$HOME/.p10k.zsh"
 link "$DOTFILES_DIR/zsh/franco_aliases" "$HOME/.franco_aliases"
 link "$DOTFILES_DIR/zsh/oh-my-zsh-custom/themes/jovial.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/jovial.zsh-theme"
 
+# --- dependencies -----------------------------------------------------------
+# Idempotent: each step is skipped if already present.
+
+OMZ_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+
+clone_plugin() {
+  local repo="$1" name="$2"
+  if [ -d "$OMZ_CUSTOM/plugins/$name" ]; then
+    echo "Already installed: $name"
+  else
+    git clone --depth 1 "$repo" "$OMZ_CUSTOM/plugins/$name"
+  fi
+}
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+  echo "oh-my-zsh is missing. Install it first: https://ohmyz.sh/#install"
+  exit 1
+fi
+
+clone_plugin https://github.com/zsh-users/zsh-autosuggestions zsh-autosuggestions
+clone_plugin https://github.com/zsh-users/zsh-syntax-highlighting zsh-syntax-highlighting
+
+if command -v zoxide >/dev/null 2>&1; then
+  echo "Already installed: zoxide"
+elif command -v brew >/dev/null 2>&1; then
+  brew install zoxide
+else
+  echo "WARNING: zoxide missing and no brew found. See https://github.com/ajeetdsouza/zoxide"
+fi
+
+if [ -e "$OMZ_CUSTOM/plugins/zsh-history-enquirer" ]; then
+  echo "Already installed: zsh-history-enquirer"
+elif command -v npm >/dev/null 2>&1; then
+  npm install -g zsh-history-enquirer
+else
+  echo "WARNING: zsh-history-enquirer missing and no npm found."
+fi
+
+echo ""
 echo "Done."
 echo ""
-echo "Not handled by this script (install separately if missing on this machine):"
-echo "  - oh-my-zsh itself: https://ohmyz.sh/#install"
-echo "  - git clone https://github.com/zsh-users/zsh-autosuggestions \${ZSH_CUSTOM:-\$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-echo "  - git clone https://github.com/zsh-users/zsh-syntax-highlighting \${ZSH_CUSTOM:-\$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-echo "  - npm install -g zsh-history-enquirer"
+echo "Optional, not handled here (config degrades gracefully if absent):"
+echo "  - rust/cargo: https://rustup.rs   (~/.zshenv sources ~/.cargo/env only if it exists)"
