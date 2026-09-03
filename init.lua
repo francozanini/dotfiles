@@ -393,7 +393,7 @@ do
   -- Load the colorscheme here.
   -- Like many other themes, this one has different styles, and you could load
   -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  vim.cmd.colorscheme 'tokyonight-night'
+  vim.cmd.colorscheme 'tokyonight-storm'
 
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
@@ -495,6 +495,7 @@ do
     --  All the info you're looking for is in `:help telescope.setup()`
     --
     defaults = {
+      path_display = { "filename_first" },
       file_ignore_patterns = {
         ".claude/"
       }
@@ -687,6 +688,9 @@ do
       if client and client:supports_method('textDocument/inlayHint', event.buf) then
         map('<leader>th', function() vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf }) end, '[T]oggle Inlay [H]ints')
       end
+
+      -- `LspEslintFixAll` is created by the eslint server's own on_attach; just wire a keymap to it.
+      if client and client.name == 'eslint' then map('<leader>ef', '<cmd>LspEslintFixAll<cr>', '[E]slint [F]ix all') end
     end,
   })
 
@@ -704,7 +708,32 @@ do
     --    https://github.com/pmizio/typescript-tools.nvim
     --
     -- But for many setups, the LSP (`ts_ls`) will work just fine
-    -- ts_ls = {},
+    ts_ls = {},
+
+    -- Angular-aware diagnostics/completion/go-to-def for .html templates and inline templates.
+    -- Probes the project's own node_modules for @angular/language-service + typescript, so it
+    -- tracks whatever Angular/TS versions the workspace actually uses.
+    angularls = {},
+
+    -- Inline diagnostics from the project's own eslint.config.mjs (flat config); `:LspEslintFixAll`
+    -- is created automatically on attach.
+    eslint = {},
+
+    -- Tailwind class autocomplete/hover/lint. Root detection already falls back to package.json's
+    -- `tailwindcss` dependency (works with v4's config-less setup, no tailwind.config.js needed).
+    tailwindcss = {
+      settings = {
+        tailwindCSS = {
+          experimental = {
+            -- Matches this project's `tailwindFunctions: ["tv"]` prettier override, so classes
+            -- inside tv({...}) variant strings get the same intellisense as `class` attributes.
+            classRegex = {
+              { 'tv\\(([^)]*)\\)', '["\'`]([^"\'`]*)["\'`]' },
+            },
+          },
+        },
+      },
+    },
 
     stylua = {}, -- Used to format Lua code
 
@@ -760,9 +789,12 @@ do
   --    :Mason
   --
   -- You can press `g?` for help in this menu.
+  -- NOTE: `servers` keys are lspconfig names (e.g. `angularls`), not mason package names —
+  -- mason-tool-installer resolves the mapping to the right package on its own.
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
+    'prettier',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -787,12 +819,14 @@ do
       local enabled_filetypes = {
         -- lua = true,
         -- python = true,
-        php = true
+        php = true,
+        html = true,
+        typescript = true,
+        javascript = true,
       }
       if enabled_filetypes[vim.bo[bufnr].filetype] then
         return { timeout_ms = 500 }
       else
-  php = true
         return nil
       end
     end,
@@ -806,7 +840,9 @@ do
       -- python = { "isort", "black" },
       --
       -- You can use 'stop_after_first' to run the first available formatter from the list
-      -- javascript = { "prettierd", "prettier", stop_after_first = true },
+      javascript = { "prettierd", "prettier", stop_after_first = true },
+      typescript = { "prettierd", "prettier", stop_after_first = true },
+      html = { "prettier" },
       php = { "pint" },
     },
   }
@@ -976,7 +1012,7 @@ do
   -- require 'kickstart.plugins.indent_line'
      require 'kickstart.plugins.lint'
   -- require 'kickstart.plugins.autopairs'
-  -- require 'kickstart.plugins.neo-tree'
+     require 'kickstart.plugins.neo-tree'
   -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
@@ -990,9 +1026,18 @@ do
   vim.lsp.enable('phpactor')
   vim.opt.relativenumber = true
   vim.opt.autoread = true
+  vim.opt.swapfile = false
+  vim.opt.scrolloff = 999
+  vim.opt.undofile = true
+  vim.opt.wrap = false -- Do not wrap
+  vim.opt.ruler = false
 
   require('lint').linters_by_ft = {
       php = { "phpstan" }
+  }
+  require('lint').linters.phpstan.args = {
+      'analyze',
+      '--memory-limit=1G',
   }
 end
 
