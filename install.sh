@@ -47,6 +47,12 @@ fi
 clone_plugin https://github.com/zsh-users/zsh-autosuggestions zsh-autosuggestions
 clone_plugin https://github.com/zsh-users/zsh-syntax-highlighting zsh-syntax-highlighting
 
+if [ -d "$OMZ_CUSTOM/themes/powerlevel10k" ]; then
+  echo "Already installed: powerlevel10k"
+else
+  git clone --depth 1 https://github.com/romkatv/powerlevel10k.git "$OMZ_CUSTOM/themes/powerlevel10k"
+fi
+
 if command -v zoxide >/dev/null 2>&1; then
   echo "Already installed: zoxide"
 elif command -v brew >/dev/null 2>&1; then
