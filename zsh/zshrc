@@ -122,6 +122,10 @@ source $ZSH/oh-my-zsh.sh
 export PATH="/opt/homebrew/bin:$PATH"
 export PATH="/opt/homebrew/sbin:$PATH"
 
+# Rust toolchain: cargo, rustc, rustfmt, rust-analyzer. Without this nvim
+# cannot find rust-analyzer and every Rust buffer attaches no LSP at all.
+export PATH="$HOME/.cargo/bin:$PATH"
+
 [[ -f ~/.formalize_aliases ]] && source ~/.formalize_aliases
 [[ -f ~/.franco_aliases ]] && source ~/.franco_aliases
 
