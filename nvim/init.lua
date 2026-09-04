@@ -371,6 +371,8 @@ do
     spec = {
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>t', group = '[T]oggle' },
+      { '<leader>r', group = '[R]ust' },
+      { '<leader>T', group = '[T]est' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
     },
@@ -393,7 +395,7 @@ do
   -- Load the colorscheme here.
   -- Like many other themes, this one has different styles, and you could load
   -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  vim.cmd.colorscheme 'tokyonight-storm'
+  vim.cmd.colorscheme 'houston'
 
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
@@ -735,6 +737,10 @@ do
       },
     },
 
+    -- TOML, so Cargo.toml gets schema validation and hover. Dependency version
+    -- completion on top of this comes from crates.nvim, not taplo.
+    taplo = {},
+
     stylua = {}, -- Used to format Lua code
 
     -- Special Lua Config, as recommended by neovim help docs
@@ -795,6 +801,8 @@ do
   vim.list_extend(ensure_installed, {
     -- You can add other tools here that you want Mason to install
     'prettier',
+    -- Rust debugger. rustaceanvim discovers it here on its own.
+    'codelldb',
   })
 
   require('mason-tool-installer').setup { ensure_installed = ensure_installed }
@@ -820,6 +828,7 @@ do
         -- lua = true,
         -- python = true,
         php = true,
+        rust = true,
         html = true,
         typescript = true,
         javascript = true,
@@ -835,7 +844,7 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
-      -- rust = { 'rustfmt' },
+      rust = { 'rustfmt' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
@@ -894,7 +903,7 @@ do
       -- <c-k>: Toggle signature help
       --
       -- See `:help blink-cmp-config-keymap` for defining your own keymap
-      preset = 'default',
+      preset = 'enter',
 
       -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
       --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -946,7 +955,7 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'rust', 'toml', 'vim', 'vimdoc' }
   require('nvim-treesitter').install(parsers)
 
   ---@param buf integer
@@ -1008,7 +1017,7 @@ do
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug'
+     require 'kickstart.plugins.debug'
   -- require 'kickstart.plugins.indent_line'
      require 'kickstart.plugins.lint'
   -- require 'kickstart.plugins.autopairs'
@@ -1018,7 +1027,7 @@ do
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- require 'custom.plugins'
+  require 'custom.plugins'
 end
 
 do
