@@ -1,8 +1,8 @@
-font-family = MonoLisa
-font-size = 13
-theme = TokyoNight Night
+font-family = JetBrains Mono
+font-size = 14
+theme = houston
 cursor-style = block
-adjust-cell-height = 35%
+adjust-cell-height = 20%
 window-padding-balance = true
 window-padding-x = 5
 window-padding-y = 0
