@@ -1701,6 +1701,11 @@
   # really need it.
   typeset -g POWERLEVEL9K_DISABLE_HOT_RELOAD=true
 
+  # Houston colours. Sourced last so it overrides every colour set above while
+  # leaving the lean prompt's behaviour untouched. Same theme as nvim, tmux and
+  # ghostty; see zsh/themes/houston.zsh.
+  source ${${(%):-%x}:A:h}/themes/houston.zsh
+
   # If p10k is already loaded, reload configuration.
   # This works even with POWERLEVEL9K_DISABLE_HOT_RELOAD=true.
   (( ! $+functions[p10k] )) || p10k reload
